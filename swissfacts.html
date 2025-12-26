@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switzerland - Design Imersivo</title>
+    <style>
+        /* --- 1. VARIÁVEIS E RESET --- */
+        :root {
+            --swiss-red: #D80000;
+            --white: #ffffff;
+            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #000;
+            color: var(--white);
+            font-family: var(--font-main);
+            overflow: hidden; 
+        }
+
+        /* --- 2. CONTAINER DE SCROLL --- */
+        .app-container {
+            height: 100vh;
+            width: 100vw;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        section {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Camada escura para ler o texto */
+        section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent 60%);
+            z-index: 1;
+        }
+
+        /* --- 3. UI SUPERIOR --- */
+        .ui-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .logo { font-weight: 700; font-size: 1.2rem; pointer-events: auto; }
+        .logo span { color: var(--swiss-red); }
+
+        .menu-btn {
+            background: var(--white); color: #000; padding: 0.5rem 1.5rem;
+            border-radius: 2rem; font-weight: 600; pointer-events: auto; cursor: pointer;
+        }
+
+        .content {
+            z-index: 2; text-align: center; max-width: 600px; padding: 2rem; position: relative;
+        }
+
+        h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+        p { opacity: 0.9; margin-bottom: 2rem; font-weight: 300; }
+
+        /* --- 4. MAPA BASEADO EM IMAGEM (A Solução Segura) --- */
+        .map-wrapper {
+            position: relative;
+            width: 90vw; /* Largura responsiva */
+            max-width: 600px; /* Limite máximo */
+            margin: 0 auto;
+        }
+
+        /* A Imagem do Mapa */
+        .map-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            /* Filtro para garantir que seja branco caso vc baixe um mapa preto */
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)) brightness(0) invert(1);
+            opacity: 0.8;
+        }
+
+        /* Os Pontos (Cidades) */
+        .city-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: translate(-50%, -50%); /* Centraliza o ponto na coordenada */
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* Efeito Hover no Ponto */
+        .city-dot:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: var(--swiss-red);
+        }
+
+        /* Capital (Berna) - Estilo Especial */
+        .city-dot.capital {
+            background: var(--swiss-red);
+            border: 2px solid white;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Rótulos das Cidades */
+        .city-label {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            opacity: 0; /* Escondido até passar o mouse */
+            pointer-events: none;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0,0,0,1);
+        }
+
+        .city-dot:hover .city-label {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="ui-layer">
+        <div class="logo">swi<span>+</span>zerland</div>
+        <div class="menu-btn">Menu</div>
+    </nav>
+
+    <div class="app-container" id="scroller">
+
+        <section style="background-image: url('https://images.unsplash.com/photo-1528629297340-d1d466945dc5?q=80&w=2522&auto=format&fit=crop');">
+            <div class="content">
+                <h2>The Alpine Experience</h2>
+                <p>Scroll to start your journey.</p>
+            </div>
+        </section>
+
+        <section style="background-image: url('https://images.unsplash.com/photo-1533604724817-486d34b4c749?q=80&w=2670&auto=format&fit=crop');">
+            <div class="content">
+                <h2>Select a Destination</h2>
+                
+                <div class="map-wrapper">
+                    <img src="suica-mapa.png" alt="Mapa da Suíça" class="map-image">
+
+                    <div class="city-dot" style="top: 75%; left: 10%;" onclick="scrollToSlide('slide-geneva')">
+                        <span class="city-label">Geneva</span>
+                    </div>
+
+                    <div class="city-dot capital" style="top: 55%; left: 35%;" onclick="scrollToSlide('slide-bern')">
+                        <span class="city-label">Bern (Capital)</span>
+                    </div>
+
+                    <div class="city-dot" style="top: 25%; left: 40%;" onclick="scrollToSlide('slide-basel')">
+                        <span class="city-label">Basel</span>
+                    </div>
+
+                    <div class="city-dot" style="top: 35%; left: 60%;" onclick="scrollToSlide('slide-zurich')">
+                        <span class="city-label">Zurich</span>
+                    </div>
+
+                    <div class="city-dot" style="top: 80%; left: 70%;" onclick="scrollToSlide('slide-lugano')">
+                        <span class="city-label">Lugano</span>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 2rem; font-size: 0.9rem;">Click on a point to explore</p>
+            </div>
+        </section>
+
+        <section id="slide-bern" style="background-image: url('https://images.unsplash.com/photo-1596489390217-06f1d167515b?q=80&w=2670&auto=format&fit=crop');">
+            <div class="content">
+                <h2>Bern</h2>
+                <p>The Federal City, distinct for its medieval old town and bears.</p>
+            </div>
+        </section>
+
+        <section id="slide-zurich" style="background-image: url('https://images.unsplash.com/photo-1515488764276-beab7607c1e6?q=80&w=2606&auto=format&fit=crop');">
+            <div class="content">
+                <h2>Zurich</h2>
+                <p>The global center for banking and finance.</p>
+            </div>
+        </section>
+
+        <section id="slide-geneva" style="background-image: url('https://images.unsplash.com/photo-1574087993078-4309c693452b?q=80&w=2670&auto=format&fit=crop');">
+            <div class="content">
+                <h2>Geneva</h2>
+                <p>A city of diplomacy and peace on the lake.</p>
+            </div>
+        </section>
+
+        <section id="slide-basel" style="background-image: url('https://images.unsplash.com/photo-1516968779836-391456d9241b?q=80&w=2670&auto=format&fit=crop');">
+            <div class="content">
+                <h2>Basel</h2>
+                <p>Switzerland's cultural capital.</p>
+            </div>
+        </section>
+
+        <section id="slide-lugano" style="background-image: url('https://images.unsplash.com/photo-1557823528-766b96e62df9?q=80&w=2670&auto=format&fit=crop');">
+            <div class="content">
+                <h2>Lugano</h2>
+                <p>Italian-speaking region with Mediterranean flair.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        function scrollToSlide(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
