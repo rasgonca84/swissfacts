@@ -39,9 +39,10 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
+            background: transparent; /* Importante para ver o vídeo */
             background-size: cover;
             background-position: center;
-            overflow: hidden;
         }
 
         /* Camada escura para melhorar leitura (Overlay) */
@@ -51,19 +52,22 @@
             inset: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 70%);
             z-index: 1;
-            pointer-events: none; /* Deixa clicar através da sombra */
+            pointer-events: none;
         }
 
-        /* --- 3. VÍDEO DE FUNDO --- */
+        /* --- 3. VÍDEO DE FUNDO (Correção Definitiva) --- */
         .video-bg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Cobre a tela toda sem esticar */
-            z-index: 0;
-            opacity: 0.7; /* Leve transparência para não brigar com o texto */
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1; /* Garante que fique atrás de tudo */
+            transform: translateX(-50%) translateY(-50%); /* Centralização perfeita */
+            object-fit: cover;
+            opacity: 0.6; /* Leve transparência para destacar o mapa */
         }
 
         /* --- 4. INTERFACE DO TOPO (Logo e Menu) --- */
@@ -113,7 +117,7 @@
             width: 100%;
             height: auto;
             display: block;
-            /* Filtro para deixar o mapa BRANCO caso sua imagem seja preta */
+            /* Filtro: Inverte cor (preto vira branco) e adiciona sombra */
             filter: drop-shadow(0 0 15px rgba(0,0,0,0.8)) brightness(0) invert(1);
             opacity: 0.9;
         }
@@ -144,10 +148,10 @@
             z-index: 10;
         }
 
-        /* Os Rótulos (Nomes das Cidades) - SEMPRE VISÍVEIS AGORA */
+        /* Os Rótulos (Nomes das Cidades) - SEMPRE VISÍVEIS */
         .city-label {
             position: absolute;
-            top: -25px; /* Fica acima da bolinha */
+            top: -30px; /* Fica acima da bolinha */
             left: 50%;
             transform: translateX(-50%);
             color: white;
@@ -156,10 +160,13 @@
             opacity: 1; /* Sempre visível */
             pointer-events: none; /* O clique passa pelo texto e vai pro mapa */
             white-space: nowrap;
-            text-shadow: 0 2px 4px rgba(0,0,0,1); /* Sombra forte para ler sobre qualquer fundo */
-            background: rgba(0,0,0,0.3); /* Fundo preto transparente sutil para leitura */
-            padding: 2px 6px;
-            border-radius: 4px;
+            /* Estilo para garantir leitura sobre qualquer vídeo */
+            text-shadow: 0 1px 3px rgba(0,0,0,1);
+            background: rgba(0, 0, 0, 0.4); 
+            backdrop-filter: blur(4px); /* Efeito vidro */
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
     </style>
@@ -207,7 +214,7 @@
                         <span class="city-label">Zurich</span>
                     </div>
 
-                    <div class="city-dot" style="top: 77%; left: 79%;" onclick="scrollToSlide('slide-lugano')">
+                    <div class="city-dot" style="top: 68%; left: 70%;" onclick="scrollToSlide('slide-lugano')">
                         <span class="city-label">Lugano</span>
                     </div>
                 </div>
