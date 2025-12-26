@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Switzerland - Alpine Design</title>
+    <title>Switzerland - Alpine Experience</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇨🇭</text></svg>">
+
     <style>
-        /* --- 1. CONFIGURAÇÕES GERAIS --- */
+        /* --- 1. CORE & RESET --- */
         :root {
             --swiss-red: #D80000;
             --white: #ffffff;
+            --black-overlay: rgba(0, 0, 0, 0.85);
             --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
@@ -18,10 +22,10 @@
             background: #000;
             color: var(--white);
             font-family: var(--font-main);
-            overflow: hidden; /* Remove barra de rolagem padrão */
+            overflow: hidden; /* O scroll é gerenciado pelo container */
         }
 
-        /* --- 2. ESTRUTURA DE SCROLL (Scrollytelling) --- */
+        /* --- 2. SCROLLYTELLING CONTAINER --- */
         .app-container {
             height: 100vh;
             width: 100vw;
@@ -39,77 +43,146 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            background: transparent; /* Importante para ver o vídeo */
+            background: transparent;
             background-size: cover;
             background-position: center;
+            overflow: hidden;
         }
 
-        /* Camada escura para melhorar leitura (Overlay) */
+        /* Overlay escuro padrão para legibilidade */
         section::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 70%);
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent 80%);
             z-index: 1;
             pointer-events: none;
         }
 
-        /* --- 3. VÍDEO DE FUNDO (Correção Definitiva) --- */
+        /* --- 3. VÍDEO DE FUNDO (MAPA) --- */
         .video-bg {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: -1; /* Garante que fique atrás de tudo */
-            transform: translateX(-50%) translateY(-50%); /* Centralização perfeita */
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            z-index: -1;
+            transform: translateX(-50%) translateY(-50%);
             object-fit: cover;
-            opacity: 0.6; /* Leve transparência para destacar o mapa */
+            opacity: 0.5; /* Ajuste para destacar o mapa */
         }
 
-        /* --- 4. INTERFACE DO TOPO (Logo e Menu) --- */
-        .ui-layer {
+        /* --- 4. NOVO MENU (Overlay Fullscreen) --- */
+        /* Botão do Menu (Hambúrguer) */
+        .menu-toggle {
+            position: fixed;
+            top: 2rem; right: 2rem;
+            z-index: 200;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .menu-toggle:hover { background: rgba(255,255,255,0.2); }
+        .menu-icon { font-size: 1.2rem; }
+
+        /* A Tela do Menu (Escondida por padrão) */
+        .menu-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 100;
-            padding: 2rem;
+            background: var(--black-overlay);
+            backdrop-filter: blur(15px);
+            z-index: 199;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
         }
 
+        .menu-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .menu-link {
+            color: var(--white);
+            font-size: 2rem;
+            font-weight: 700;
+            text-decoration: none;
+            margin: 1rem 0;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .menu-link:hover { opacity: 1; transform: scale(1.1); color: var(--swiss-red); }
+
+        /* Logo Fixa */
         .logo { 
-            font-weight: 700; font-size: 1.2rem; pointer-events: auto; 
+            position: fixed;
+            top: 2rem; left: 2rem;
+            z-index: 200;
+            font-weight: 700; font-size: 1.2rem; 
             text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            pointer-events: none; /* Deixa clicar no slide se precisar */
         }
         .logo span { color: var(--swiss-red); }
 
-        .menu-btn {
-            background: var(--white); color: #000; padding: 0.5rem 1.5rem;
-            border-radius: 2rem; font-weight: 600; pointer-events: auto; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        /* --- 5. CONTEÚDO E TEXTOS --- */
+        /* --- 5. CONTEÚDO E ANIMAÇÕES --- */
         .content {
-            z-index: 2; /* Fica acima do vídeo e do overlay */
+            z-index: 2;
             text-align: center;
             max-width: 600px;
             padding: 2rem;
             position: relative;
         }
 
-        h2 { font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        p { opacity: 0.95; margin-bottom: 2rem; font-weight: 300; line-height: 1.5; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        /* Classe para animação de scroll (JavaScript ativa isso) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-        /* --- 6. ESTILOS DO MAPA (Imagem + Pontos) --- */
+        h2 { font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
+        p { opacity: 0.9; margin-bottom: 2rem; font-weight: 300; line-height: 1.6; font-size: 1.1rem; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+
+        /* Botão "Voltar ao Mapa" */
+        .btn-back-map {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 10px 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            background: rgba(0,0,0,0.3);
+            color: var(--white);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .btn-back-map:hover { background: var(--swiss-red); border-color: var(--swiss-red); }
+
+        /* --- 6. MAPA ESTILIZADO --- */
         .map-wrapper {
             position: relative;
-            width: 90vw; /* Responsivo: 90% da largura da tela */
-            max-width: 600px; /* Mas não passa de 600px */
+            width: 90vw;
+            max-width: 650px;
             margin: 0 auto;
         }
 
@@ -117,82 +190,72 @@
             width: 100%;
             height: auto;
             display: block;
-            /* Filtro: Inverte cor (preto vira branco) e adiciona sombra */
-            filter: drop-shadow(0 0 15px rgba(0,0,0,0.8)) brightness(0) invert(1);
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)) brightness(0) invert(1);
             opacity: 0.9;
+            transition: transform 0.5s;
         }
 
-        /* Os Pontos (Bolinhas) */
+        /* Pontos e Labels */
         .city-dot {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
+            width: 12px; height: 12px;
+            background: white; border-radius: 50%;
             cursor: pointer;
-            transform: translate(-50%, -50%); /* Centraliza exato no ponto */
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0,0,0,1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .city-dot:hover { transform: translate(-50%, -50%) scale(1.8); background: var(--swiss-red); }
 
-        .city-dot:hover {
-            transform: translate(-50%, -50%) scale(1.6);
-            background: var(--swiss-red);
-        }
+        .city-dot.capital { background: var(--swiss-red); border: 2px solid white; width: 16px; height: 16px; }
 
-        .city-dot.capital {
-            background: var(--swiss-red);
-            border: 2px solid white;
-            width: 14px;
-            height: 14px;
-            z-index: 10;
-        }
-
-        /* Os Rótulos (Nomes das Cidades) - SEMPRE VISÍVEIS */
         .city-label {
             position: absolute;
-            top: -30px; /* Fica acima da bolinha */
-            left: 50%;
+            top: -35px; left: 50%;
             transform: translateX(-50%);
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            opacity: 1; /* Sempre visível */
-            pointer-events: none; /* O clique passa pelo texto e vai pro mapa */
-            white-space: nowrap;
-            /* Estilo para garantir leitura sobre qualquer vídeo */
-            text-shadow: 0 1px 3px rgba(0,0,0,1);
-            background: rgba(0, 0, 0, 0.4); 
-            backdrop-filter: blur(4px); /* Efeito vidro */
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.1);
+            color: white; font-size: 14px; font-weight: 700;
+            pointer-events: none; white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0,0,0,1);
+            background: rgba(0,0,0,0.5);
+            padding: 4px 10px; border-radius: 4px;
+            backdrop-filter: blur(4px);
         }
 
     </style>
 </head>
 <body>
 
-    <nav class="ui-layer">
-        <div class="logo">swi<span>+</span>zerland</div>
-        <div class="menu-btn">Menu</div>
-    </nav>
+    <div class="logo">swi<span>+</span>zerland</div>
+
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <span>Menu</span>
+        <div class="menu-icon">☰</div>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay">
+        <a href="#" class="menu-link" onclick="toggleMenu(); scrollToSlide('slide-intro')">Home</a>
+        <a href="#" class="menu-link" onclick="toggleMenu(); scrollToSlide('slide-map')">Interactive Map</a>
+        <a href="#" class="menu-link" onclick="toggleMenu(); scrollToSlide('slide-bern')">Bern</a>
+        <a href="#" class="menu-link" onclick="toggleMenu(); scrollToSlide('slide-zurich')">Zurich</a>
+        <a href="#" class="menu-link" onclick="toggleMenu(); scrollToSlide('slide-geneva')">Geneva</a>
+        <div style="margin-top: 2rem; cursor: pointer; color: var(--swiss-red);" onclick="toggleMenu()">✕ Close</div>
+    </div>
 
     <div class="app-container" id="scroller">
 
-        <section style="background-image: url('https://images.unsplash.com/photo-1528629297340-d1d466945dc5?q=80&w=2522&auto=format&fit=crop');">
-            <div class="content">
+        <section id="slide-intro" style="background-image: url('https://images.unsplash.com/photo-1528629297340-d1d466945dc5?q=80&w=2522&auto=format&fit=crop');">
+            <div class="content reveal">
                 <h2>The Alpine Experience</h2>
                 <p>Scroll down to start your journey.</p>
             </div>
         </section>
 
-        <section>
+        <section id="slide-map">
             <video autoplay muted loop playsinline class="video-bg">
                 <source src="background.mp4" type="video/mp4">
             </video>
 
-            <div class="content">
+            <div class="content reveal">
                 <h2>Select a Destination</h2>
                 
                 <div class="map-wrapper">
@@ -219,55 +282,91 @@
                     </div>
                 </div>
                 
-                <p style="margin-top: 3rem; font-size: 0.9rem; opacity: 0.8;">Click on a city to explore</p>
+                <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.8;">Click to explore</p>
             </div>
         </section>
 
         <section id="slide-bern" style="background-image: url('https://images.unsplash.com/photo-1596489390217-06f1d167515b?q=80&w=2670&auto=format&fit=crop');">
-            <div class="content">
+            <div class="content reveal">
                 <h2>Bern</h2>
                 <p>The Federal City. Known for its medieval architecture, the Zytglogge clock tower, and the bears park.</p>
+                <button class="btn-back-map" onclick="scrollToSlide('slide-map')">↑ Back to Map</button>
             </div>
         </section>
 
         <section id="slide-zurich" style="background-image: url('https://images.unsplash.com/photo-1515488764276-beab7607c1e6?q=80&w=2606&auto=format&fit=crop');">
-            <div class="content">
+            <div class="content reveal">
                 <h2>Zurich</h2>
                 <p>A global center for banking and finance. It buzzes with activity, from the trendy Zürich-West district to the lake.</p>
+                <button class="btn-back-map" onclick="scrollToSlide('slide-map')">↑ Back to Map</button>
             </div>
         </section>
 
         <section id="slide-geneva" style="background-image: url('https://images.unsplash.com/photo-1574087993078-4309c693452b?q=80&w=2670&auto=format&fit=crop');">
-            <div class="content">
+            <div class="content reveal">
                 <h2>Geneva</h2>
                 <p>Home to the Red Cross and the United Nations. A city of peace located on the vast Lake Geneva.</p>
+                <button class="btn-back-map" onclick="scrollToSlide('slide-map')">↑ Back to Map</button>
             </div>
         </section>
 
         <section id="slide-basel" style="background-image: url('https://images.unsplash.com/photo-1516968779836-391456d9241b?q=80&w=2670&auto=format&fit=crop');">
-            <div class="content">
+            <div class="content reveal">
                 <h2>Basel</h2>
                 <p>Switzerland's cultural capital. Located on the Rhine, it hosts Art Basel and many museums.</p>
+                <button class="btn-back-map" onclick="scrollToSlide('slide-map')">↑ Back to Map</button>
             </div>
         </section>
 
         <section id="slide-lugano" style="background-image: url('https://images.unsplash.com/photo-1557823528-766b96e62df9?q=80&w=2670&auto=format&fit=crop');">
-            <div class="content">
+            <div class="content reveal">
                 <h2>Lugano</h2>
                 <p>Located in the Italian-speaking Ticino region, Lugano mixes Swiss efficiency with Mediterranean culture.</p>
+                <button class="btn-back-map" onclick="scrollToSlide('slide-map')">↑ Back to Map</button>
             </div>
         </section>
 
     </div>
 
     <script>
-        // Função para scroll suave ao clicar
+        // 1. Função Menu Toggle
+        function toggleMenu() {
+            const overlay = document.getElementById('menuOverlay');
+            overlay.classList.toggle('active');
+        }
+
+        // 2. Função Scroll Suave
         function scrollToSlide(id) {
             const element = document.getElementById(id);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
             }
         }
+
+        // 3. Script de Animação (Intersection Observer)
+        // Detecta quando o slide entra na tela e ativa a classe .active
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Procura o elemento .reveal dentro da seção visível
+                    const revealContent = entry.target.querySelector('.reveal');
+                    if(revealContent) {
+                        revealContent.classList.add('active');
+                    }
+                } else {
+                    // Opcional: Remove a classe para animar de novo ao voltar
+                    const revealContent = entry.target.querySelector('.reveal');
+                    if(revealContent) {
+                        revealContent.classList.remove('active');
+                    }
+                }
+            });
+        }, { threshold: 0.3 }); // Ativa quando 30% do slide estiver visível
+
+        // Aplica o observador a todas as seções
+        document.querySelectorAll('section').forEach((section) => {
+            observer.observe(section);
+        });
     </script>
 </body>
 </html>
